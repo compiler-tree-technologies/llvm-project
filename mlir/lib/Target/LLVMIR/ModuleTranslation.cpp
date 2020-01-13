@@ -58,6 +58,23 @@ llvm::Constant *ModuleTranslation::getLLVMConstant(llvm::Type *llvmType,
       return llvm::ConstantArray::get(arrayType, constants);
     }
   }
+  // CTT BEGIN
+  // TODO: upstream
+  if (auto arrAttr = attr.dyn_cast<ArrayAttr>()) {
+    SmallVector<llvm::Constant *, 8> constants;
+    auto ArrType = cast<llvm::ArrayType>(llvmType);
+    auto elementType = ArrType->getElementType();
+    auto numElements = arrAttr.size();
+    constants.reserve(arrAttr.size());
+    for (auto n : arrAttr.getValue()) {
+      constants.push_back(getLLVMConstant(elementType, n, loc));
+      if (!constants.back())
+        return nullptr;
+    }
+    auto arrayType = llvm::ArrayType::get(elementType, numElements);
+    return llvm::ConstantArray::get(arrayType, constants);
+  }
+  // CTT END
   if (auto elementsAttr = attr.dyn_cast<ElementsAttr>()) {
     auto *sequentialType = cast<llvm::SequentialType>(llvmType);
     auto elementType = sequentialType->getElementType();

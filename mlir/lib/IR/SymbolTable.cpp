@@ -28,9 +28,11 @@ SymbolTable::SymbolTable(Operation *symbolTableOp)
          "expected operation to have SymbolTable trait");
   assert(symbolTableOp->getNumRegions() == 1 &&
          "expected operation to have a single region");
+/*
+  CTT: FIXME
   assert(has_single_element(symbolTableOp->getRegion(0)) &&
          "expected operation to have a single block");
-
+*/
   for (auto &op : symbolTableOp->getRegion(0).front()) {
     auto nameAttr = op.getAttrOfType<StringAttr>(getSymbolAttrName());
     if (!nameAttr)
@@ -143,10 +145,14 @@ LogicalResult OpTrait::impl::verifySymbolTable(Operation *op) {
   if (op->getNumRegions() != 1)
     return op->emitOpError()
            << "Operations with a 'SymbolTable' must have exactly one region";
+/*
+  // CTT
+  // TODO: Why should symbol table have one block only?
+  // FIXME: Need to have custom symbol table if this assertion remains.
   if (!has_single_element(op->getRegion(0)))
     return op->emitOpError()
            << "Operations with a 'SymbolTable' must have exactly one block";
-
+*/
   // Check that all symbols are uniquely named within child regions.
   llvm::StringMap<Location> nameToOrigLoc;
   for (auto &block : op->getRegion(0)) {

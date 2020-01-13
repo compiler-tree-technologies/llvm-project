@@ -320,6 +320,9 @@ static LogicalResult deleteDeadness(MutableArrayRef<Region> regions,
 // This function returns success if any operations or arguments were deleted,
 // failure otherwise.
 static LogicalResult runRegionDCE(MutableArrayRef<Region> regions) {
+  // CTT BEGIN:  FIXME: Remove the assertion?
+  return success();
+  // CTT END
   assert(regions.size() == 1);
 
   LiveMap liveMap;
